@@ -1,4 +1,7 @@
-python generate.py
+mkdir -p thumbnails
+rm -f -r thumbnails/*
+python make.py --verbose
+
 pdflatex front.tex
 pdflatex content.tex
 pdflatex content.tex
