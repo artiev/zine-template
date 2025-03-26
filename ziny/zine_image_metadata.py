@@ -215,10 +215,11 @@ class ZineImageMetadata():
 
 
 
-    def load_substitution_dictionary(self, dictionary_file = 'dictionary.json'):
+    def load_substitution_dictionary(self, dictionary_file_path = 'dictionary.json'):
 
         try:
-            with open(dictionary_file) as dico:
+            with open(dictionary_file_path) as dico:
+                logger.debug(f'Substitution dictionary loaded ({dictionary_file_path}).')
                 substitutions = json.load(dico)
         except:
             substitutions = None
