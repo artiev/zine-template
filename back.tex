@@ -1,0 +1,40 @@
+\documentclass[11pt, a4paper, twosided, openright]{book}
+\usepackage[
+  paperheight=299mm,paperwidth=211.5mm,
+  bindingoffset=0cm, %1cm,
+  top=1.5cm, bottom=1.5cm,
+  left=1.5cm, right=1.5cm,
+  headheight=0pt,
+  includehead, includefoot,
+  heightrounded
+]{geometry}
+
+\usepackage{tgcursor}
+\renewcommand*\familydefault{\ttdefault}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0cm}
+
+\usepackage{graphicx}
+
+\input{template/customs.tex}
+\input{defines.tex}
+
+\begin{document}
+    \thispagestyle{empty}
+    \vspace*{15cm}
+
+    \makeatletter
+
+    \begin{minipage}{\textwidth}
+        \centering
+        \includegraphics[height=2cm]{template/marmot.jpg}\par
+        \vspace{1cm}
+        \par \@title
+        \par by \@author
+    \end{minipage}
+
+    \makeatother
+
+\end{document}

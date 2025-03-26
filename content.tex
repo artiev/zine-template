@@ -1,0 +1,76 @@
+\documentclass[11pt, a4paper, twosided, openright]{book}
+\usepackage[papersize={216mm,303mm},
+    layout=a4paper,
+    layouthoffset=3mm,
+    layoutvoffset=3mm,
+    bindingoffset=0.5cm, %1cm,
+    top=1.5cm, bottom=1.5cm,
+    left=1.5cm, right=1.5cm,
+    headheight=12pt,
+    includehead, includefoot,
+    heightrounded]{geometry}
+\usepackage[hidelinks]{hyperref}
+\usepackage{emptypage}
+
+\usepackage{tgcursor}
+\renewcommand*\familydefault{\ttdefault}
+\usepackage[british]{babel}
+\selectlanguage{british}
+\usepackage[useregional]{datetime2}
+\DTMdefboolkey{en-GB}{showdayofmonth}[false]{}
+\usepackage{fontawesome5}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0cm}
+\extrafloats{100}
+
+\usepackage{graphicx}
+
+\input{template/customs.tex}
+\input{defines.tex}
+
+
+\begin{document}
+
+\input{copyright.tex}
+
+\makeatletter
+    \chapterpage{
+    {\par\huge\bfseries \@zinetitle}
+    \vspace{1cm}
+    {\par\huge \@zinesubtitle}
+    }
+\makeatother
+
+\pagerileri{
+    Foreword%
+}{
+    I must have travelled these paths a hundred times by now, yet their magic never fades. I will never get tired of the vibrant colours of Alsatian houses nor of the gentle murmur of the wind weaving through the treetops above this serene and protected valley. I would like to show you my home away from home, where the noise of the world quiets down and nature is all there is to see and hear.%
+}{
+    Nestled in the heart of the Northern Vosges Regional Natural Park, Rosteig is a small French village where time seems to stand still, surrounded by endless forests and steeped in tranquility. It is where I get away from the bustling city of Munich where\\ I otherwise reside, and I wish for these\\ photographs to carry some of the beauty\\ and peace I found here.%
+}
+
+\cleardoublepage
+
+\graphicspath{ {./images_content/} }
+\include{images.tex}
+
+\chapterpage{\huge Index}
+
+\pagerileri{
+    I'd rather be outside, shooting, than inside, editing.%
+}{
+    I do study the work of other photographers to understand how I can improve my photography. So I decided to include an index of all the pictures in this Zine with information about the gear I used, the camera settings, and so on. The pictures in this collection were shot with digital cameras. For the most part, I shoot in aperture priority with manual exposure compensation, and custom auto-ISO settings aimed at maintaining a shutter speed no lower than 1/125th or 1/250th of a second depending on the lens and type of situation I am in. I shoot in either auto-white balance with some shifts in the colour cast, or fully manual (e.g. 5700K for mid-summer daylight).%
+}{
+    Every photograph here was shot directly in JPEG, using custom settings to get the images as close to the final look as possible. In post, I sparsely adjust colours, contrast and white balance to harmonize pictures across a collection, and might need to crop ever so slightly if something close to the frame bothers me too much. But for the most part, the images are as close as possible to\\ how they were shot.%
+}
+
+\graphicspath{ {./images_index/} }
+\include{index.tex}
+
+\cleardoublepage{\thispagestyle{empty}}
+
+\include{template/prints.tex}
+
+\end{document}

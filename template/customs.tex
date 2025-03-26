@@ -1,0 +1,46 @@
+\def\textpagetopmargin{4cm}
+\def\textpageparscpacing{3cm}
+
+\newcommand{\chapterpage}[1]{
+  \cleardoublepage{\thispagestyle{empty}}
+
+  \vspace*{10cm}
+  \begin{minipage}{\textwidth}
+    \centering
+    #1
+  \end{minipage}
+
+  \cleardoublepage{}
+}
+
+\newcommand{\pagerileri}[3]{
+    \clearpage
+    \par\vspace*{\textpagetopmargin}\hfill
+    \begin{minipage}{0.7\textwidth}
+        \raggedleft\huge #1
+    \end{minipage}
+    \par\vspace{\textpageparscpacing}
+    \begin{minipage}{0.7\textwidth}
+        \raggedright #2
+    \end{minipage}\hfill
+    \par\vspace{\textpageparscpacing}\hfill
+    \begin{minipage}{0.7\textwidth}
+        \raggedleft #3
+    \end{minipage}
+}
+
+\newcommand{\pagelerile}[3]{
+    \clearpage
+    \par\vspace*{\textpagetopmargin}
+    \begin{minipage}{0.7\textwidth}
+        \raggedright\huge #1
+    \end{minipage}\hfill
+    \par\vspace{\textpageparscpacing}\hfill
+    \begin{minipage}{0.7\textwidth}
+        \raggedleft #2
+    \end{minipage}
+    \par\vspace{\textpageparscpacing}
+    \begin{minipage}{0.7\textwidth}
+        \raggedright #3
+    \end{minipage}\hfill
+}

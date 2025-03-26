@@ -1,0 +1,69 @@
+\documentclass[11pt, a4paper, twosided, openright]{book}
+\usepackage[
+  paperheight=299mm,paperwidth=211.5mm,
+  bindingoffset=0cm, %1cm,
+  top=1.5cm, bottom=1.5cm,
+  left=1.5cm, right=1.9cm,
+  headheight=0pt,
+  includehead, includefoot,
+  heightrounded
+]{geometry}
+
+\usepackage{tgcursor}
+\renewcommand*\familydefault{\ttdefault}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{0cm}
+
+\usepackage{graphicx}
+\graphicspath{ {./images_content/} }
+
+\input{template/customs.tex}
+\input{defines.tex}
+
+\begin{document}
+
+  \makeatletter
+  
+    \begin{titlepage}
+      \noindent~
+      \vfill
+      \begin{minipage}{0.45\textwidth}
+        \raggedright
+        {
+        \par\fontsize{2em}{1em}\selectfont\bfseries
+        \@zinenumber
+        }
+      \end{minipage}
+      \hfill
+      \begin{minipage}{0.45\textwidth}
+          \raggedleft\fontsize{2em}{1em}\selectfont\bfseries%
+          \@zinetitle
+      \end{minipage}
+      
+      \vspace*{1cm}
+
+      \includegraphics[width=\textwidth]{front.jpg}
+
+      \vspace{1.5cm}
+
+      \begin{minipage}{\textwidth}
+        \raggedright
+        \centering
+        {
+            \par\fontsize{1.5em}{2em}\selectfont\mdseries%
+            $\cdot$ \@zinesubtitle\ $\cdot$
+        }
+        \vspace{2.5cm}
+        {
+            \par\normalsize\itshape
+            by \@author
+        }
+      \end{minipage}
+      \vfill
+    \end{titlepage}
+
+  \makeatother
+
+\end{document}
