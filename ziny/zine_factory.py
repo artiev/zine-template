@@ -38,10 +38,13 @@ class ZineFactory():
     # Visibility: default, hidden
     # Layout: auto, single (single image on page)
     # Position: auto, top, bottom (only if layout=single)
+    # Order: order photos
     sidecar_template = """{
         "visibility": "default",
         "layout": "auto",
-        "position": "auto"
+        "position": "auto",
+        "order": -1,
+        title: ""
     }"""
 
     def __init__(self, image_folder:str):
@@ -70,10 +73,10 @@ class ZineFactory():
                     #stripped_path = os.path.relpath(relative_path, start=self.image_folder)
                     logger.info(f'Found image `{relative_path}`')
 
-                    meta = self.extract_exif_data(relative_path)
+                    meta = self.extract_exif_data(relative_path, id)
                     meta.set_id(id)
 
-                    sidecar_file_path = self.scan_for_sidecar_file(relative_path)
+                    sidecar_file_path = self.find_sidecar_file(relative_path)
                     if sidecar_file_path is not None:
                         meta.extract_sidecar_data(sidecar_file_path)
 
@@ -83,7 +86,7 @@ class ZineFactory():
         
         logger.info(f'Scanning completed. A total of {len(self.library_keys)} entries were added to the library.')
 
-    def scan_for_sidecar_file(self, relative_image_file_path:str) -> str:
+    def find_sidecar_file(self, relative_image_file_path:str) -> str:
         """
         Check for JSON sidecar file. If it doesn't exist, create it.
         """
