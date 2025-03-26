@@ -14,19 +14,19 @@ class ZineFactory():
     content_template = """
     \\begin{{figure}}
     \\centering
-    \\phantomsection\\label{{img:{image}}}
-    \\includegraphics[height=\\textheight, width=160mm, keepaspectratio]{{{image}}}%
+    \\phantomsection\\label{{img:{image_path}}}
+    \\includegraphics[height=\\textheight, width=160mm, keepaspectratio]{{{image_path}}}%
     \\end{{figure}}
     """
 
     index_template = """
     \\begin{{minipage}}{{0.25\\textwidth}}
-    \\includegraphics[width=43mm, keepaspectratio]{{{image}}}
+    \\includegraphics[width=43mm, keepaspectratio]{{{thumbnail_path}}}
     \\end{{minipage}}
     \\hfill
     \\begin{{minipage}}{{0.70\\textwidth}}
     \\raggedright
-    \\par \\raisebox{{-0.1\\height}}{{\\faImage[regular]}}~\\textbf{{Photo \\#{id}}} $\\cdot$ Page~\\pageref{{img:{image}}} $\\cdot$ {timestamp}
+    \\par \\raisebox{{-0.1\\height}}{{\\faImage[regular]}}~\\textbf{{Photo \\#{id}}} $\\cdot$ Page~\\pageref{{img:{image_path}}} $\\cdot$ {timestamp}
     \\par {make} {model}
     \\par {lens_make} {lens_model}
     \\par {aperture} $\cdot$ {speed} $\cdot$ ISO {iso}
@@ -44,6 +44,9 @@ class ZineFactory():
         "layout": "auto",
         "position": "auto"
     }"""
+
+    # Zine thumbnails for the index.
+    thumbnail_size = 1024, 1024
 
     def __init__(self, image_folder:str):
 
@@ -88,7 +91,7 @@ class ZineFactory():
                     
                     meta.extract_sidecar_data(relative_sidecar_path)
 
-                    # Add image data to library
+                    # Add image data to library and keeping track of the order with self.library_keys
                     self.library_keys.append(relative_image_path)
                     self.library[relative_image_path] = meta
                     id += 1
@@ -99,6 +102,7 @@ class ZineFactory():
         """
         Return sidecar file path based on image file path.
         """
+
         return relative_image_file_path + '.json'
     
     def is_sidecar_file_found(self, relative_sidecar_file_path:str) -> str:
@@ -122,6 +126,10 @@ class ZineFactory():
 
 
     def extract_metadata_from_exif_data(self, image_path, id:int = 0) -> ZineImageMetadata:
+        """
+        Create a ZineImageMetadata object, and parse the EXIF data extracted from the 
+        image file.
+        """
 
         with Image.open(image_path) as imgfile:
                 exifdata = imgfile._getexif()
@@ -134,7 +142,47 @@ class ZineFactory():
     def generate_thumbnails(self):
         """
         Generate index thumbnail images from the main image library to use in the Photo Index.
+        LANCZOS Resamspling is deemed to be the best quality albeit the slowest algorithm. 
+        See https://pillow.readthedocs.io/en/stable/handbook/concepts.html#filters-comparison-table
         """
         
-        pass
+        logger.info('Generating thumbnails for images registered in the library.')
 
+        for key in self.library_keys:
+            meta = self.library.get(key)
+            relative_thumbnail_path = 'thumbnails/' + meta.get_image_file_name()
+
+            with Image.open(meta.image_path) as imgfile:
+                imgfile.thumbnail(self.thumbnail_size, Image.Resampling.LANCZOS)
+                imgfile.save(relative_thumbnail_path)
+                meta.set_thumbnail_path(relative_thumbnail_path)
+
+                logger.debug(f'Thumbnail {meta.thumbnail_path} generated successfully.')
+
+    def generate_latex_content(self, output_path:str = 'images.tex'):
+        """
+        Generate the latex code that will create the main photographic content of the Zine.
+        """
+        
+        logger.info(f'Generating content latex file from photo library ({output_path}).')
+
+        with open(output_path, 'w') as latex:
+
+            for key in self.library_keys:
+                meta = self.library.get(key)
+                content = self.content_template.format(**meta.to_dict())
+                latex.write(content)
+
+    def generate_latex_index(self, output_path:str = 'index.tex'):
+        """
+        Generate the thumbnail and metadata information of the zine.
+        """
+
+        logger.info(f'Generating index latex file from photo library ({output_path}).')
+        
+        with open(output_path, 'w') as latex:
+
+            for key in self.library_keys:
+                meta = self.library.get(key)
+                content = self.index_template.format(**meta.to_dict())
+                latex.write(content)

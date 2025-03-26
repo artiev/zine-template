@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 from datetime import datetime
@@ -18,13 +19,15 @@ class ZineImageMetadata():
     correct format already.
     """
 
-    def __init__(self, id=None, image=None, timestamp=None, description=None,
+    def __init__(self, id=None, image_path=None, thumbnail_path=None,
+                 timestamp=None, description=None,
                  make=None, model=None, lens_make=None, lens_model=None, 
                  aperture=None, speed=None, iso=None, 
                  expocomp=None, program=None, metering_mode=None, wb_mode=None):
         
         self.id=id
-        self.image=image
+        self.image_path=image_path
+        self.thumbnail_path=thumbnail_path
         self.timestamp=timestamp
         self.description=description
         self.make=make
@@ -42,7 +45,7 @@ class ZineImageMetadata():
         self.sidecar_data = dict()
 
         logger.debug(f'ID: {self.id}')
-        logger.debug(f'Image Path: {self.image}')
+        logger.debug(f'Image Path: {self.image_path}')
         self.load_substitution_dictionary('dictionary.json')
 
     def _substitute_and_sanitize(self, something:str) -> str:
@@ -53,6 +56,7 @@ class ZineImageMetadata():
         
         # Special cases and escaping
         something = something.replace('&', '\&')
+        something = something.replace(chr(0), '')
 
         return something
 
@@ -60,7 +64,8 @@ class ZineImageMetadata():
 
         td = dict(
             id = self.id,
-            image = self.image,
+            image_path = self.image_path,
+            thumbnail_path = self.thumbnail_path,
             timestamp = self.timestamp,
             description = self.description,
             make = self.make,
@@ -78,8 +83,14 @@ class ZineImageMetadata():
 
         return td
     
+    def get_image_file_name(self):
+        return os.path.basename(self.image_path)
+    
     def set_id(self, id:int) -> None:
         self.id = id
+
+    def set_thumbnail_path(self, thumbnail_path:str) -> None:
+        self.thumbnail_path = thumbnail_path
 
     def parse_exif_data(self, exifdata) -> None:
         """
@@ -212,6 +223,9 @@ class ZineImageMetadata():
         logger.debug(f'Aperture: {self.aperture}')
 
     def extract_sidecar_data(self, sidecar_file_path:str) -> None:
+        """
+        Exctract JSON data from sidecar file and records it to the metadata.
+        """
 
         try:
             with open(sidecar_file_path) as scf:
@@ -228,6 +242,11 @@ class ZineImageMetadata():
 
 
     def load_substitution_dictionary(self, dictionary_file_path = 'dictionary.json'):
+        """
+        To avoid poorly formatted camera and lens maker data and information, a substitution
+        dictionary is available. Load substitutions pairs from dictionary. 
+        Note: Default to dictionary.json.
+        """
 
         try:
             with open(dictionary_file_path) as dico:

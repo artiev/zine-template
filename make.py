@@ -21,6 +21,9 @@ def main(verbose:bool) -> int:
 
     factory = ZineFactory(image_folder = 'images/')
     factory.scan()
+    factory.generate_thumbnails()
+    factory.generate_latex_content()
+    factory.generate_latex_index()
 
 def force_verbose():
     logging.getLogger('Main App').setLevel(logging.DEBUG)
