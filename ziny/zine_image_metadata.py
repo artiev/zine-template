@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from PIL.TiffImagePlugin import IFDRational
-from PIL.ExifTags import Base
+from PIL.ExifTags import Base, IFD
 
 from ziny.zine_exif_constants import WhiteBalance, ExposureProgram, ExposureMode, MeteringMode
 
@@ -18,7 +18,7 @@ class ZineImageMetadata():
     correct format already.
     """
 
-    def __init__(self, id=None, image=None, timestamp=None, 
+    def __init__(self, id=None, image=None, timestamp=None, description=None,
                  make=None, model=None, lens_make=None, lens_model=None, 
                  aperture=None, speed=None, iso=None, 
                  expocomp=None, program=None, metering_mode=None, wb_mode=None):
@@ -26,6 +26,7 @@ class ZineImageMetadata():
         self.id=id
         self.image=image
         self.timestamp=timestamp
+        self.description=description
         self.make=make
         self.model=model
         self.lens_make=lens_make
@@ -61,6 +62,7 @@ class ZineImageMetadata():
             id = self.id,
             image = self.image,
             timestamp = self.timestamp,
+            description = self.description,
             make = self.make,
             model = self.model,
             lens_make = self.lens_make,
@@ -84,6 +86,7 @@ class ZineImageMetadata():
         Extract the relevant exif data.
         """
         
+        self.readout_user_description(exifdata.get(Base.ImageDescription.value))
         self.infer_iso(exifdata.get(Base.ISOSpeedRatings.value))
         self.infer_timestamp(exifdata.get(Base.DateTimeOriginal.value))
         self.infer_speed_fraction(exifdata.get(Base.ExposureTime.value))
@@ -95,6 +98,15 @@ class ZineImageMetadata():
         self.infer_program(exifdata.get(Base.ExposureProgram.value))
         self.infer_white_balance(exifdata.get(Base.WhiteBalance.value))
     
+    def readout_user_description(self, description) -> None:
+        """
+        Readout image description. Note: Description is manually set in image editing program.
+        """
+
+        self.description = description
+
+        logger.debug(f'Description: {self.description}')
+
     def infer_iso(self, sensitivity) -> None:
 
         # Nothing to infer
