@@ -25,6 +25,8 @@ def main(verbose:bool) -> int:
     factory.generate_latex_content()
     factory.generate_latex_index()
 
+    return 0
+
 def force_verbose():
     logging.getLogger('Main App').setLevel(logging.DEBUG)
     logging.getLogger('Zine Factory').setLevel(logging.DEBUG)
