@@ -42,7 +42,7 @@ class ZineImageMetadata():
         self.metering_mode=metering_mode
         self.white_balance = wb_mode
 
-        self.sidecar_data = dict()
+        self.sidecar = dict()
 
         logger.debug(f'ID: {self.id}')
         logger.debug(f'Image Path: {self.image_path}')
@@ -59,6 +59,12 @@ class ZineImageMetadata():
         something = something.replace(chr(0), '')
 
         return something
+    
+    def get_attribute_by_key(self, key:str) -> object:
+        return self.__getattribute__(key)
+    
+    def set_attribute_by_key(self, key:str, value) -> object:
+        return self.__setattr__(key, value)
 
     def to_dict(self) -> dict:
 
@@ -83,7 +89,7 @@ class ZineImageMetadata():
 
         return td
     
-    def get_image_file_name(self):
+    def get_image_file_name(self) -> str:
         return os.path.basename(self.image_path)
     
     def set_id(self, id:int) -> None:
@@ -108,7 +114,7 @@ class ZineImageMetadata():
         self.infer_metering(exifdata.get(Base.MeteringMode.value))
         self.infer_program(exifdata.get(Base.ExposureProgram.value))
         self.infer_white_balance(exifdata.get(Base.WhiteBalance.value))
-    
+
     def readout_user_description(self, description) -> None:
         """
         Readout image description. Note: Description is manually set in image editing program.
@@ -158,7 +164,7 @@ class ZineImageMetadata():
                 exposure_compensation += ' and {}/3'.format(eca_thirds)
 
 
-        if bias > 0:
+        if bias >= 0:
             exposure_compensation = '+' + exposure_compensation
         elif bias < 0:
             exposure_compensation = '-' + exposure_compensation
@@ -180,6 +186,7 @@ class ZineImageMetadata():
         logger.debug(f'White balance: {self.white_balance}')
 
         # Not supported yet
+        logger.warning('White Balance Inferrence is not currently supported. Oopsie.')
         self.temperature = temperature
         logger.debug(f'Temperature: {self.temperature}')
 
@@ -240,6 +247,18 @@ class ZineImageMetadata():
             logger.debug(err.msg)
 
 
+    def apply_sidecar_overwrites(self) -> None:
+        """
+        Apply any manuel overwrites from the Sidecar (json) file.
+        Skip any empty field.
+        """
+        logger.info('Applying overwrites from Sidecar file (if any).')
+        overwrites = self.sidecar.get('overwrites', dict())
+
+        for key in overwrites.keys():
+            if overwrites.get(key, None): 
+                logger.debug(f'Metadata `{key}` was overwritten by sidecar file. {self.get_attribute_by_key(key)} is now { overwrites[key]}')
+                self.set_attribute_by_key(key, overwrites[key]) # Pray here.
 
     def load_substitution_dictionary(self, dictionary_file_path = 'dictionary.json'):
         """

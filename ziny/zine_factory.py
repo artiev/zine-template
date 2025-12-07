@@ -4,6 +4,7 @@ import logging
 from PIL import Image
 
 from ziny.zine_image_metadata import ZineImageMetadata
+from ziny.zine_index_template import ZineIndexTemplate
 
 logger = logging.getLogger('Zine Factory')
 logger.setLevel(logging.INFO)
@@ -19,22 +20,6 @@ class ZineFactory():
     \\end{{figure}}
     """
 
-    index_template = """
-    \\begin{{minipage}}{{0.25\\textwidth}}
-    \\includegraphics[width=43mm, keepaspectratio]{{{thumbnail_path}}}
-    \\end{{minipage}}
-    \\hfill
-    \\begin{{minipage}}{{0.70\\textwidth}}
-    \\raggedright
-    \\par \\raisebox{{-0.1\\height}}{{\\faImage[regular]}}~\\textbf{{Photo \\#{id}}} $\\cdot$ Page~\\pageref{{img:{image_path}}} $\\cdot$ {timestamp}
-    \\par {make} {model}
-    \\par {lens_make} {lens_model}
-    \\par {aperture} $\cdot$ {speed} $\cdot$ ISO {iso}
-    \\par {program} $\cdot$ {metering_mode} Metering {exposure_compensation} stop
-    \\end{{minipage}}
-    \\vspace{{0.5cm}}
-    """
-
     # Visibility: default, hidden
     # Layout: auto, single (single image on page)
     # Position: auto, top, bottom (only if layout=single)
@@ -42,7 +27,22 @@ class ZineFactory():
     sidecar_template = """{
         "visibility": "default",
         "layout": "auto",
-        "position": "auto"
+        "position": "auto",
+        "overwrites":{
+            "timestamp":"",
+            "description":"",
+            "make": "",
+            "model": "",
+            "lens_make": "",
+            "lens_model": "",
+            "aperture": "",
+            "speed": "",
+            "iso": "",
+            "exposure_compensation": "",
+            "program": "",
+            "metering_mode": "",
+            "white_balance": ""
+        }
     }"""
 
     # Zine thumbnails for the index.
@@ -90,6 +90,7 @@ class ZineFactory():
                         self.create_sidecar_file_from_template(relative_sidecar_path)
                     
                     meta.extract_sidecar_data(relative_sidecar_path)
+                    meta.apply_sidecar_overwrites()
 
                     # Add image data to library and keeping track of the order with self.library_keys
                     self.library_keys.append(relative_image_path)
@@ -105,7 +106,7 @@ class ZineFactory():
 
         return relative_image_file_path + '.json'
     
-    def is_sidecar_file_found(self, relative_sidecar_file_path:str) -> str:
+    def is_sidecar_file_found(self, relative_sidecar_file_path:str) -> bool:
         """
         Check for JSON sidecar file. If it doesn't exist, create it.
         """
@@ -183,6 +184,6 @@ class ZineFactory():
         with open(output_path, 'w') as latex:
 
             for key in self.library_keys:
-                meta = self.library.get(key)
-                content = self.index_template.format(**meta.to_dict())
-                latex.write(content)
+                content = ZineIndexTemplate()
+                content.configure(meta=self.library.get(key))
+                latex.write(content.get_template())

@@ -1,5 +1,20 @@
 {
         "visibility": "default",
         "layout": "auto",
-        "position": "auto"
+        "position": "auto",
+        "overwrites":{
+            "timestamp":"",
+            "description":"",
+            "make": "",
+            "model": "",
+            "lens_make": "",
+            "lens_model": "",
+            "aperture": "",
+            "speed": "",
+            "iso": "",
+            "exposure_compensation": "",
+            "program": "",
+            "metering_mode": "",
+            "white_balance": ""
+        }
     }
